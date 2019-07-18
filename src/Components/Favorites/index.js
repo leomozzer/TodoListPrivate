@@ -10,7 +10,7 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
-import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
+import Favorite from '@material-ui/icons/Favorite';
 import DeleteOutline from '@material-ui/icons/DeleteOutline';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import CheckBoxOutlineBlank from '@material-ui/icons/CheckBoxOutlineBlank'
@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function Home() {
+export default function Favorites() {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
 
@@ -75,7 +75,7 @@ export default function Home() {
       </CardContent>
       <CardActions disableSpacing>
         <IconButton aria-label="Add to favorites">
-          <FavoriteBorder />
+          <Favorite />
         </IconButton>
         <IconButton aria-label="Add to archived notes">
           <CheckBoxOutlineBlank />
