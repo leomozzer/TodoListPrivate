@@ -1,0 +1,39 @@
+[debug] [2019-07-20T14:04:28.637Z] ----------------------------------------------------------------------
+[debug] [2019-07-20T14:04:28.642Z] Command:       /usr/bin/node /usr/bin/firebase serve --only functions,hosting
+[debug] [2019-07-20T14:04:28.642Z] CLI Version:   7.1.0
+[debug] [2019-07-20T14:04:28.642Z] Platform:      linux
+[debug] [2019-07-20T14:04:28.642Z] Node Version:  v8.16.0
+[debug] [2019-07-20T14:04:28.643Z] Time:          Sat Jul 20 2019 11:04:28 GMT-0300 (-03)
+[debug] [2019-07-20T14:04:28.643Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-07-20T14:04:28.881Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-07-20T14:04:28.881Z] > authorizing via signed-in user
+[debug] [2019-07-20T14:04:28.882Z] [iam] checking project portfolio-leo for permissions ["firebase.projects.get"]
+[debug] [2019-07-20T14:04:28.884Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/portfolio-leo:testIamPermissions  
+
+[debug] [2019-07-20T14:04:30.131Z] <<< HTTP RESPONSE 200
+[debug] [2019-07-20T14:04:30.134Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/portfolio-leo  
+ 
+[debug] [2019-07-20T14:04:31.462Z] <<< HTTP RESPONSE 200
+[debug] [2019-07-20T14:04:31.472Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/portfolio-leo/webApps/-/config  
+ 
+[info] ✔  functions: Using node@8 from host.
+[debug] [2019-07-20T14:04:31.486Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/portfolio-leo/adminSdkConfig  
+ 
+[debug] [2019-07-20T14:04:32.683Z] <<< HTTP RESPONSE 200
+[debug] [2019-07-20T14:04:32.772Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: Emulator started at http://localhost:5001
+[info] i  functions: Watching "/home/leonardo/Documentos/Projetos/Working/Todo-List/functions" for Cloud Functions...
+[info] i  hosting: Serving hosting files from: public
+[info] ✔  hosting: Local server: http://localhost:5000
+[info] [hosting] Rewriting /new to http://localhost:5001/portfolio-leo/us-central1/app for local Function app
+[debug] [2019-07-20T14:04:39.179Z] Accepted request GET /portfolio-leo/us-central1/app/new --> app
+[debug] [2019-07-20T14:04:43.073Z] [runtime-status] Functions runtime initialized. {"cwd":"/home/leonardo/Documentos/Projetos/Working/Todo-List/functions","node_version":"8.16.0"}
+[debug] [2019-07-20T14:04:43.073Z] [runtime-status] Functions runtime initialized. {"cwd":"/home/leonardo/Documentos/Projetos/Working/Todo-List/functions","node_version":"8.16.0"}
+[debug] [2019-07-20T14:04:43.074Z] [runtime-status] Disabled runtime features: {"functions_config_helper":true,"network_filtering":true,"timeout":true,"memory_limiting":true,"protect_env":true,"admin_stubs":true} {}
+[info] i  functions: Beginning execution of "app"
+[debug] [2019-07-20T14:04:43.074Z] [runtime-status] Disabled runtime features: {"functions_config_helper":true,"network_filtering":true,"timeout":true,"memory_limiting":true,"protect_env":true,"admin_stubs":true} {}
+[warn] ⚠  The Cloud Functions emulator requires the module "firebase-admin" to be installed. This package is in your package.json, but it's not available. You probably need to run "npm install" in your functions directory.
+[warn] ⚠  The Cloud Functions emulator requires the module "firebase-admin" to be installed. This package is in your package.json, but it's not available. You probably need to run "npm install" in your functions directory.
+[info] i  functions: Your functions could not be parsed due to an issue with your node_modules (see above)
+[info] i  functions: Your functions could not be parsed due to an issue with your node_modules (see above)

@@ -6,6 +6,7 @@ admin.initializeApp();
 const app = express();
 //firebase serve --only functions,hosting
 const firebase = require('firebase');
+const uniqid = require('uniqid')
 var firebaseConfig = {
     apiKey: "AIzaSyAoFRwF51VYyXmxE1vbSwdv0IJ4JvNIZCE",
     authDomain: "portfolio-leo.firebaseapp.com",
@@ -17,8 +18,6 @@ var firebaseConfig = {
   };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
-const data_base = firebase.database();
 // const ARCHIVED = data_base.collection('TODOS').doc('ARCHIVED');
 // const DELETED = data_base.collection('TODOS').doc('DELETED');
 // const FAVORITES = data_base.collection('TODOS').doc('FAVORITES');
@@ -39,18 +38,51 @@ const data_base = firebase.database();
 //     })
 // }
 const userId = "leomozzer"
-function newTodo(userId, idNotes){
-    return firebase.database().ref(`${userId}/todo/${idNotes}`).update({
+
+async function newTodo(user){
+    const date = new Date()
+    var time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    var currentDate = date.getDate() +"/"+ (date.getMonth() + 1) +"/"+ date.getFullYear()
+    return await firebase.database().ref(`${user}/todo/open/${uniqid.time()}`).update({
         title: 'First Todo',
-        date: Date.now(),
+        date: currentDate,
+        time: time,
         archived: false,
         deleted: false,
         favorite: false,
         open: true
+    },
+        function(err){
+            if (err){
+                console.log("ERR")
+            }
+            else{
+                console.log("OK")
+            }
+        }
+    ) 
+}
+
+async function openTodos(user){
+    return await firebase.database().ref(`${user}/todo/open`).once('value').then(function(data){
+        console.log(data.val())
+        return data.val()
     })
 }
 
-const idNotes = "abcs"
+async function deleteTodo(user, id){
+    //return await firebase.database().ref(`${user}/todo`)
+    firebase.database().ref(`${user}/todo/open/${id}`).remove()
+    return await firebase.database().ref(`${user}/todo/deleted/${id}`).update({
+        title: "First Todo",
+        date: 'ola',
+        time: 'ola',
+        archived: false,
+        deleted: true,
+        favorite: false,
+        open: false,
+    })
+}
 app.get('/new', (req, res) => {
     // res.json(ReadGroups().then(res=> console.log(res)))
     // ReadGroups().then(response => res.send(response))
@@ -58,17 +90,19 @@ app.get('/new', (req, res) => {
     //     name: 'ola'
     // })
     // res.send('store')
-    newTodo(userId, idNotes);
+    //const newTeste = async () => { await newTodo(userId, idNotes)};
+    //newTodo(userId, idNotes)
+    console.log(req.body)
+    newTodo(userId).then(response => {res.send(response)})
+    //res.send('ola')
 })
 
 app.get('/open', (req, res) => {
-    var userId = firebase.auth().currentUser.uid;
-    return firebase.database().ref('teste').once('value').then(
-        function(snapshot){
-            var username = (snapshot.val() && snapshot.val().username || 'Anonymous')
-        }
-    )
-    res.send('open')
+    openTodos(userId).then(response => {res.json(response)})
+})
+
+app.get('/delete', (req, res)=> {
+    deleteTodo(userId, 'jybu2f5h').then(response => res.send('feito'))
 })
 
 app.get('/new-cached', (req, res) => {
