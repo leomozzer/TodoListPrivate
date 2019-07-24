@@ -10,24 +10,33 @@ admin.initializeApp();
 // app.use(express.urlencoded());
 // app.use(express.json())
 app.use(bodyParses.urlencoded({
-    extended: false
+    extended: true
 }))
 const router = express.Router();
 app.use(bodyParses.json())
 
-async function newTodo(user, inputTitle){
+async function newTodo(user, inputTitle, inputText){
+    let todos;
+    let addTodos;
     const date = new Date()
     var time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     var currentDate = date.getDate() +"/"+ (date.getMonth() + 1) +"/"+ date.getFullYear()
-    return await firebaseCredentials.database().ref(`${user}/todo/open/${uniqid.time()}`).update({
-        title: inputTitle,
+    const newTodo = {
         date: currentDate,
+        id: uniqid.time(),
         time: time,
-        archived: false,
-        deleted: false,
-        favorite: false,
-        open: true
-    },
+        title: inputTitle,
+        text: inputText
+    }
+    const data = await firebaseCredentials.database().ref(`projects/TodoList/${user}/todo/open`).once('value');
+    todos = data.val()
+    if(todos === null){
+        addTodos = [newTodo]
+    }
+    else{
+        addTodos = todos.concat(newTodo)
+    }
+    return await firebaseCredentials.database().ref(`projects/TodoList/${user}/todo/open`).set(addTodos,
         function(err){
             if (err){
                 console.log("ERR")
@@ -40,51 +49,131 @@ async function newTodo(user, inputTitle){
 }
 
 async function openTodos(user){
-    const data = await firebaseCredentials.database().ref(`${user}/todo/open`).once('value');
+    const data = await firebaseCredentials.database().ref(`projects/TodoList/${user}/todo/open`).once('value');
     const todos = data.val();
     console.log(todos);
-    console.log(data)
-    return data;
+    // console.log(data)
+    return JSON.stringify(todos);
 }
 
 async function deleteTodo(user, id){
-    //return await firebase.database().ref(`${user}/todo`)
-    firebaseCredentials.database().ref(`${user}/todo/open/${id}`).remove()
-    return await firebase.database().ref(`${user}/todo/deleted/${id}`).update({
+    //return await firebase.database().ref(`projects/TodoList/${user}/todo`)
+    firebaseCredentials.database().ref(`projects/TodoList/${user}/todo/open/${id}`).remove()
+    return await firebase.database().ref(`projects/TodoList/${user}/todo/deleted/${id}`).update({
         title: "First Todo",
         date: 'ola',
         time: 'ola',
-        archived: false,
-        deleted: true,
-        favorite: false,
-        open: false,
     })
 }
 
 async function archiveTodo(user, id){
-    firebaseCredentials.database().ref(`${user}/todo/open/${id}`).remove();
-    return await firebaseCredentials.database().ref(`${user}/todo/archived/${id}`).update({
+    firebaseCredentials.database().ref(`projects/TodoList/${user}/todo/open/${id}`).remove();
+    return await firebaseCredentials.database().ref(`projects/TodoList/${user}/todo/archived/${id}`).update({
         title: "First Todo",
         date: 'ola',
         time: 'ola',
-        archived: true,
-        deleted: false,
-        favorite: false,
-        open: false,
     })
 }
-async function favoriteTodo(user, id){
-    firebaseCredentials.database().ref(`${user}/todo/open/${id}`).remove();
-    return await firebaseCredentials.database().ref(`${user}/todo/favorites/${id}`).update({
-        title: "First Todo",
-        date: 'ola',
-        time: 'ola',
-        archived: false,
-        deleted: false,
-        favorite: true,
-        open: false,
-    })
+async function changeStateTodo(user, id, path){
+    console.log(path)
+    const readOpen = await firebaseCredentials.database().ref(`projects/TodoList/${user}/todo/open`).once('value');
+    const storedPath = await firebaseCredentials.database().ref(`projects/TodoList/${user}/todo/${path}`).once('value');
+    let openTodos = readOpen.val();
+    // let favoriteTodos = readFavorites.val()
+    let dataPath = storedPath.val();
+    const size = openTodos.length;
+    let newFavoriteTodo;
+    let changedTodo;
+    console.log(dataPath)
+    console.log(openTodos)
+    for(let i = 0; i < size; i++){
+        if(id === openTodos[i].id){
+            if(dataPath === null){
+                console.log('null')
+                changedTodo = [openTodos[i]];
+                openTodos.splice(i, 1)
+                console.log(newFavoriteTodo)
+                console.log(openTodos)
+                break;
+            }
+            else{
+                console.log('!null')
+                changedTodo = dataPath.concat(openTodos[i]);
+                openTodos.splice(i, 1);
+                console.log(changedTodo);
+                console.log(openTodos)
+            }
+        }
+    }
+    // return openTodos;
+    firebaseCredentials.database().ref(`projects/TodoList/${user}/todo/${path}`).set(changedTodo,
+        function(err){
+            if (err){
+                console.log("ERR")
+            }
+            else{
+                firebaseCredentials.database().ref(`projects/TodoList/${user}/todo/open`).set(openTodos,
+                    function(err){
+                        if (err){
+                            console.log("ERR")
+                        }
+                        else{
+                            console.log("OK")
+                        }
+                    }
+                )  
+            }
+        }
+    )
 }
+// async function favoriteTodo(user, id){
+//     const readOpen = await firebaseCredentials.database().ref(`projects/TodoList/${user}/todo/open`).once('value');
+//     const readFavorites = await firebaseCredentials.database().ref(`projects/TodoList/${user}/todo/favorites`).once('value');
+//     let openTodos = readOpen.val();
+//     let favoriteTodos = readFavorites.val()
+//     const size = openTodos.length;
+//     let newFavoriteTodo;
+//     console.log(favoriteTodos)
+//     console.log(openTodos)
+//     for(let i = 0; i < size; i++){
+//         if(id === openTodos[i].id){
+//             if(favoriteTodos === null){
+//                 console.log('null')
+//                 newFavoriteTodo = [openTodos[i]];
+//                 openTodos.splice(i, 1)
+//                 console.log(newFavoriteTodo)
+//                 console.log(openTodos)
+//                 break;
+//             }
+//             else{
+//                 console.log('!null')
+//                 newFavoriteTodo = favoriteTodos.concat(openTodos[i]);
+//                 openTodos.splice(i, 1);
+//                 console.log(favoriteTodos);
+//                 console.log(openTodos)
+//             }
+//         }
+//     }
+//     firebaseCredentials.database().ref(`projects/TodoList/${user}/todo/favorites`).set(newFavoriteTodo,
+//         function(err){
+//             if (err){
+//                 console.log("ERR")
+//             }
+//             else{
+//                 firebaseCredentials.database().ref(`projects/TodoList/${user}/todo/open`).set(openTodos,
+//                     function(err){
+//                         if (err){
+//                             console.log("ERR")
+//                         }
+//                         else{
+//                             console.log("OK")
+//                         }
+//                     }
+//                 )  
+//             }
+//         }
+//     )
+// }
 
 // async function teste(){
 //     await fetch('/favoriteTodo', {
@@ -116,7 +205,7 @@ app.post('/newTodo', (req, res)=> {
     console.log(req.body.userId)
     var info = JSON.parse(req.body)
     console.log(info)
-    newTodo(info.userId, info.title).then(response => res.send('feito'))
+    newTodo(info.userId, info.title, info.text).then(response => res.send('feito'))
 })
 
 app.get('/ola', (req, res, next) => {
@@ -126,14 +215,16 @@ app.get('/ola', (req, res, next) => {
 })
 
 
-app.get('/showTodo', (req, res) => {
+app.get('/showTodo', async (req, res) => {
     const userId = req.query.id;
-//    openTodos(userId).then(response => {
-  //    res.status(200).json(JSON.stringify(response.body))
-    //})
-    //openTodos(userId).then(resposta => {res.json(resposta)})
-    //res.send(response)
-    openTodos(userId).then(response => res.send(JSON.stringify(response)))
+    const data = await firebaseCredentials.database().ref(`projects/TodoList/${userId}/todo/open`).once('value');
+    const todos = data.val();
+    if(todos=== null){
+        res.json([{}])
+    }
+    else{
+        res.json(data.val());
+    }
 })
 
 app.get('/deleteTodo', (req, res)=> {
@@ -142,9 +233,17 @@ app.get('/deleteTodo', (req, res)=> {
 app.get('/archiveTodo', (req, res)=> {
     archiveTodo(userId, 'jyed73sm').then(response => res.send('feito'))
 })
+app.post('/archiveTodo', (req, res) => {
+    var info = JSON.parse(req.body)
+    changeStateTodo(info.userId, info.todoId, info.path)
+})
 app.post('/favoriteTodo', (req, res) => {
     console.log(req.body)
     console.log(req.body.name)
+    var info = JSON.parse(req.body)
+    // favoriteTodo(info.userId, info.todoId)
+    changeStateTodo(info.userId, info.todoId, info.path)
+    // res.send('feito')
     // favoriteTodo(req.body.userId, req.body.todoId).then(response => res.send('feito'))
 })
 app.get('/favoriteTodo', (req, res) => {
@@ -164,6 +263,7 @@ app.get('/new-cached', (req, res) => {
 //app.use(require('./src/routes'))
 
 //module.exports = router;
+// app.listen('5000')
 exports.app = functions.https.onRequest(app)
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions

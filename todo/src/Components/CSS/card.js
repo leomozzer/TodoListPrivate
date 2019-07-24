@@ -5,6 +5,7 @@ export const cardStyles = makeStyles(theme => ({
     card: {
         maxWidth: 345,
         // backgroundColor: '#b3d7e8'
+        marginTop: 10,
       },
       media: {
         height: 0,
